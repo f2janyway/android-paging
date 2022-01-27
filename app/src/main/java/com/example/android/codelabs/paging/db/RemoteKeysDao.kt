@@ -16,10 +16,7 @@
 
 package com.example.android.codelabs.paging.db
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 
 @Dao
 interface RemoteKeysDao {
@@ -27,6 +24,7 @@ interface RemoteKeysDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(remoteKey: List<RemoteKeys>)
 
+    @SuppressWarnings(RoomWarnings.CURSOR_MISMATCH)
     @Query("SELECT * FROM remote_keys WHERE repoId = :repoId")
     suspend fun remoteKeysRepoId(repoId: Long): RemoteKeys?
 
