@@ -22,6 +22,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.example.android.codelabs.paging.R
 import com.example.android.codelabs.paging.model.Repo
@@ -30,6 +31,7 @@ import com.example.android.codelabs.paging.model.Repo
  * View Holder for a [Repo] RecyclerView list item.
  */
 class RepoViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    private val container: ConstraintLayout = view.findViewById(R.id.repo_container)
     private val name: TextView = view.findViewById(R.id.repo_name)
     private val description: TextView = view.findViewById(R.id.repo_description)
     private val stars: TextView = view.findViewById(R.id.repo_stars)
@@ -47,7 +49,7 @@ class RepoViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    fun bind(repo: Repo?) {
+    fun bind(repo: Repo?, onSnapShotChanged: (Repo?,position:Int) -> Unit) {
         if (repo == null) {
             val resources = itemView.resources
             name.text = resources.getString(R.string.loading)
@@ -57,10 +59,15 @@ class RepoViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             forks.text = resources.getString(R.string.unknown)
         } else {
             showRepoData(repo)
+            container.setOnClickListener {
+                onSnapShotChanged(repo,absoluteAdapterPosition)
+            }
         }
     }
 
+
     private fun showRepoData(repo: Repo) {
+
         this.repo = repo
         name.text = repo.fullName
 

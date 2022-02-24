@@ -57,6 +57,10 @@ class GithubRepository(
         ).flow
     }
 
+    suspend fun updateUserAction(repo: Repo,){
+        database.reposDao().updateAt(repo)
+    }
+
     companion object {
         const val NETWORK_PAGE_SIZE = 30
     }
