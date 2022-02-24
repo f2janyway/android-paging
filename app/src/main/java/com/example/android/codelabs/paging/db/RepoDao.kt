@@ -17,10 +17,7 @@
 package com.example.android.codelabs.paging.db
 
 import androidx.paging.PagingSource
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.example.android.codelabs.paging.model.Repo
 
 @Dao
@@ -38,4 +35,7 @@ interface RepoDao {
 
     @Query("DELETE FROM repos")
     suspend fun clearRepos()
+
+    @Update
+    suspend fun updateAt(repo: Repo)
 }

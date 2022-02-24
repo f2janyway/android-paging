@@ -19,24 +19,10 @@ package com.example.android.codelabs.paging.ui
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagingData
-import androidx.paging.cachedIn
-import androidx.paging.insertSeparators
-import androidx.paging.map
+import androidx.paging.*
 import com.example.android.codelabs.paging.data.GithubRepository
 import com.example.android.codelabs.paging.model.Repo
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
-import kotlinx.coroutines.flow.shareIn
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 /**
@@ -54,6 +40,9 @@ class SearchRepositoriesViewModel(
     val state: StateFlow<UiState>
 
     val pagingDataFlow: Flow<PagingData<UiModel>>
+
+    private val _userUpdatePagingData = MutableStateFlow<PagingData<UiModel>>(PagingData.empty())
+    val userUpdatePagingData = _userUpdatePagingData.asStateFlow()
 
     /**
      * Processor of side effects from the UI which in turn feedback into [state]
@@ -140,6 +129,18 @@ class SearchRepositoriesViewModel(
                     }
                 }
             }
+
+    fun onSnapshotChanged(
+        clickedRepo: Repo?,
+        dataChange: () -> Unit
+    ) {
+        clickedRepo ?: return
+        clickedRepo.fullName += "click!!"
+        dataChange.invoke()
+        viewModelScope.launch {
+            repository.updateUserAction(clickedRepo)
+        }
+    }
 }
 
 sealed class UiAction {
